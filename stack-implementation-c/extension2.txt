@@ -1,0 +1,52 @@
+// extension2 task: Develop explicit comparison code in Python, Java, or C and compare and contrast it with your selected language.
+
+
+// This is the original Go code.
+
+package main
+
+import "fmt"
+
+var globalVar = "I'm global"
+
+func main() {
+    localVar := "I'm local"
+    fmt.Println(globalVar)
+    fmt.Println(localVar)
+    {
+        blockVar := "I'm inside a block"
+        fmt.Println(blockVar)
+    }
+    exampleFunction()
+}
+
+func exampleFunction() {
+    fmt.Println(globalVar)
+}
+
+
+
+// Python equivalent.
+
+# Global variable
+global_var = "I'm global"
+
+def main():
+    # Local variable
+    local_var = "I'm local"
+    print(global_var)
+    print(local_var)
+    
+    # Python doesn’t have true block scope, just function scope
+    block_var = "I'm inside a block"
+    print(block_var)  # Still accessible after block
+    
+    print(block_var)  # No error, unlike Go
+
+def example_function():
+    print(global_var)  # Works fine
+
+main()
+
+
+Comparison: Python doesn’t limit variables to blocks, so block_var stays usable after its section, and it doesn’t need {} like Go. Go’s := is a quick way to make variables, while Python just uses regular assignment.

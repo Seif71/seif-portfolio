@@ -1,0 +1,91 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct stack {
+    void **data;
+    void **top;
+    int capacity;
+} Stack;
+
+// Create a stack with a given capacity
+Stack *stk_create(int capacity) {
+    Stack *stack = (Stack *)malloc(sizeof(Stack));
+    if (!stack) return NULL;
+    
+    stack->data = (void **)malloc(capacity * sizeof(void *));
+    if (!stack->data) {
+        free(stack);
+        return NULL;
+    }
+    
+    stack->top = stack->data;
+    stack->capacity = capacity;
+    return stack;
+}
+
+// Destroy the stack, but does NOT free the stored items
+void stk_destroy(Stack *stack) {
+    if (stack) {
+        free(stack->data);
+        free(stack);
+    }
+}
+
+// Return the number of items in the stack
+int stk_size(Stack *stack) {
+    return (int)(stack->top - stack->data);
+}
+
+// Push an item onto the stack
+void stk_push(Stack *stack, void *item) {
+    if (stk_size(stack) >= stack->capacity) {
+        return; // Stack is full
+    }
+    *(stack->top) = item;
+    stack->top++;
+}
+
+// Peek at the top item without removing it
+void *stk_peek(Stack *stack) {
+    if (stk_size(stack) == 0) return NULL;
+    return *(stack->top - 1);
+}
+
+// Pop the top item off the stack
+void *stk_pop(Stack *stack) {
+    if (stk_size(stack) == 0) return NULL;
+    stack->top--;
+    return *(stack->top);
+}
+
+// Convert stack contents to a string using a given toString function
+char *stk_toString(Stack *stack, char *(*toString)(void *)) {
+    if (stk_size(stack) == 0) {
+        char *emptyStr = (char *)malloc(3);
+        strcpy(emptyStr, "[]");
+        return emptyStr;
+    }
+    
+    // Estimate memory allocation size
+    int estimatedSize = 64 * stk_size(stack); // Adjust dynamically later
+    char *result = (char *)malloc(estimatedSize);
+    if (!result) return NULL;
+    
+    strcpy(result, "[");
+    for (int i = 0; i < stk_size(stack); i++) {
+        char *itemStr = toString(stack->data[i]);
+        int requiredSize = strlen(result) + strlen(itemStr) + 3; // Space for separator and bracket
+        
+        if (requiredSize > estimatedSize) {
+            estimatedSize *= 2;
+            result = (char *)realloc(result, estimatedSize);
+        }
+        
+        strcat(result, itemStr);
+        if (i < stk_size(stack) - 1) strcat(result, ", ");
+        free(itemStr);
+    }
+    strcat(result, "]");
+    return result;
+}
